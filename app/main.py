@@ -1,4 +1,5 @@
 import logging
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from api import routes
@@ -15,6 +16,15 @@ app = FastAPI(
     title="OpenCrawl API",
     description="An API for crawling and analyzing websites.",
     version="1.0.0"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust to the domain of your front-end
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Register API routes

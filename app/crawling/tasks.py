@@ -1,9 +1,16 @@
-from celery import Celery
+from celery import Celery, shared_task
 from crawling.spider import run_spider
 from database.session import SessionLocal
-from models.crawl_results import CrawlResult
-import logging
+from models.crawl_results import CrawlResult, CrawlTask
 from core.config import settings
+from sqlalchemy.ext.asyncio import AsyncSession
+import logging
+import time
+
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+from crawling.seo_spider import SEOSpider  # Custom spider
+
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -50,3 +57,51 @@ def start_crawl_task(url: str, depth: int, user_agent: str):
         db.close()
 
     return {"message": f"Crawl completed for {url}"}
+
+# Start a web crawl (simulated for now)
+@shared_task
+def crawl_website(task_id: str, url: str):
+    # Start a new database session
+    db: AsyncSession = SessionLocal()
+
+    try:
+        # Update task to "in progress"
+        task = db.query(CrawlTask).filter(CrawlTask.id == task_id).first()
+        task.status = "in progress"
+        db.commit()
+
+        # Simulate crawling (delay)
+        time.sleep(10)  # Simulate crawl delay
+
+        # Update the task with the result
+        task.result = f"Crawl completed for {url}"
+        task.status = "completed"
+        db.commit()
+
+    except Exception as e:
+        # Handle error and update the task as failed
+        task.status = "failed"
+        task.result = str(e)
+        db.commit()
+
+    finally:
+        db.close()
+
+
+@shared_task
+def seo_crawler_task(task_id: str, url: str, depth: int, user_agent: str):
+    """
+    This task runs the SEO Crawler for a given URL.
+    """
+    # Set up Scrapy settings and configure the spider
+    process = CrawlerProcess(settings={
+        "USER_AGENT": user_agent,
+        "DEPTH_LIMIT": depth,
+        "LOG_ENABLED": False  # You can enable logging for debugging
+    })
+
+    # Run the Scrapy spider
+    process.crawl(SEOSpider, project_id=task_id, start_urls=[url])
+    process.start()
+
+    return {"task_id": task_id, "status": "completed"}
