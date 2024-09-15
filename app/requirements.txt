@@ -1,0 +1,33 @@
+# FastAPI and dependencies
+fastapi==0.95.2
+uvicorn==0.22.0
+
+# Additional required dependencies
+psycopg2-binary==2.9.6
+importlib-metadata==4.13.0
+
+# SQLAlchemy and PostgreSQL driver
+sqlalchemy==2.0.21
+asyncpg==0.29.0  # PostgreSQL async driver
+
+# Alembic for database migrations
+alembic==1.10.0
+
+# Scrapy for web crawling
+scrapy==2.9.0
+
+# Celery and Redis dependencies
+celery==5.4.0
+redis==4.6.0
+
+# Pydantic for data validation (compatible version)
+pydantic==1.10.9  # Ensure this version is below 2.0.0
+
+# Requests for handling external HTTP requests (optional)
+requests==2.31.0
+
+# Optional: Logging and Monitoring
+python-json-logger==2.0.7
+
+# Optional: For async background tasks (FastAPI-native)
+httpx==0.24.1
