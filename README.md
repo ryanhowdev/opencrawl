@@ -26,7 +26,7 @@ OpenCrawl is a web crawling API built with FastAPI and Celery, designed to allow
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/OpenCrawl-SEOSpider.git
+git clone https://github.com/ryanhowdev/opencrawl.git
 cd OpenCrawl-SEOSpider
 ```
 
